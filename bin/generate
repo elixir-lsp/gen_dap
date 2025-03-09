@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+
+set -e
+
+echo "==> Generating Protocol"
+elixir \
+  -e 'Mix.install([{:dap_codegen, github: "elixir-lsp/dap_codegen"}], force: true); DAPCodegen.generate(System.argv())' \
+  -- \
+  --path ./lib/gen_dap/protocol
+
+echo "==> Removing trailing whitespace"
+case "$OSTYPE" in
+  darwin*) sedc="gsed" ;;
+  *) sedc="sed" ;;
+esac
+
+"$sedc" -i 's/[ \t]*$//' ./lib/gen_dap/protocol/**/*.ex
+
+echo "==> mix format"
+mix format
