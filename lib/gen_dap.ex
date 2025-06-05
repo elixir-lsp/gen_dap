@@ -1,8 +1,70 @@
 defmodule GenDAP do
-  @moduledoc "README.md"
-             |> File.read!()
-             |> String.split("<!-- MDOC !-->")
-             |> Enum.fetch!(1)
+  @moduledoc """
+  GenDAP is a library for implementing the Debug Adapter Protocol (DAP) in Elixir applications.
+
+  The Debug Adapter Protocol is a protocol used by development tools to communicate with debuggers.
+  This library provides the core functionality needed to implement a DAP server, including:
+
+  * Request/response handling
+  * Message validation
+  * Error handling
+  * Protocol compliance
+
+  ## Usage
+
+  ```elixir
+  defmodule MyDebugger do
+    use GenDAP
+
+    alias GenDAP.Requests
+    alias GenDAP.Events
+    alias GenDAP.Structures
+
+    def start_link(opts) do
+      GenDAP.start_link(__MODULE__, [], opts)
+    end
+
+    @impl true
+    def init(dap, _init_args) do
+      {:ok, assign(dap, some_state: :value)}
+    end
+
+    @impl true
+    def handle_request(%Requests.InitializeRequest{} = request, dap) do
+      {:reply,
+       %Requests.InitializeResponse{
+         request_seq: request.seq,
+         seq: 0,
+         body: %Structures.Capabilities{
+           supports_cancel_request: true
+         }
+       }, dap}
+    end
+
+    def handle_request(%Requests.LaunchRequest{} = request, dap) do
+      # Launch debugger implementation
+      {:reply,
+       %Requests.LaunchResponse{
+         request_seq: request.seq,
+         seq: 0
+       }, dap}
+    end
+  end
+  ```
+
+  ## Protocol
+
+  The library implements the Debug Adapter Protocol as specified in the
+  [DAP specification](https://microsoft.github.io/debug-adapter-protocol/).
+
+  ## Error Handling
+
+  The library provides several exception types for handling protocol errors:
+
+  * `GenDAP.InvalidRequest` - Raised when an invalid request is received
+  * `GenDAP.InvalidResponse` - Raised when an invalid response is generated
+  * `GenDAP.InvalidMessage` - Raised when an invalid message is received
+  """
 
   defmodule InvalidRequest do
     defexception message: nil
