@@ -45,6 +45,31 @@ jobs:
       - name: Run Tests
         run: mix test || mix test --failed || mix test --failed
 
+  spec_lint:
+    runs-on: ubuntu-22.04
+    name: spec_lint (1.20.4/29)
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '29'
+          elixir-version: '1.20.4'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-spec-lint-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-spec-lint-
+
+      - name: Install Dependencies
+        run: mix deps.get
+
+      - name: Run spec_lint
+        run: mix spec_lint
+
   formatter:
     runs-on: ubuntu-latest
     name: Formatter (1.16.x/26.x)
