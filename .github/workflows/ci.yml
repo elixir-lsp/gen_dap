@@ -19,10 +19,6 @@ jobs:
             elixir: 1.17.x
           - otp: 26.x
             elixir: 1.16.x
-          - otp: 25.x
-            elixir: 1.15.x
-          - otp: 24.x
-            elixir: 1.14.x
 
     steps:
       - uses: actions/checkout@v2
@@ -44,6 +40,34 @@ jobs:
 
       - name: Run Tests
         run: mix test || mix test --failed || mix test --failed
+
+  spec_lint:
+    runs-on: ubuntu-22.04
+    name: spec_lint (1.20.4/29)
+
+    steps:
+      - uses: actions/checkout@v2
+      - uses: erlef/setup-beam@v1
+        with:
+          otp-version: '29'
+          elixir-version: '1.20.4'
+      - uses: actions/cache@v3
+        with:
+          path: |
+            deps
+            _build
+          key: ${{ runner.os }}-mix-spec-lint-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-mix-spec-lint-
+
+      - name: Install Dependencies
+        run: mix deps.get
+
+      - name: Compile with warnings as errors
+        run: mix compile --warnings-as-errors
+
+      - name: Run spec_lint
+        run: mix spec_lint
 
   formatter:
     runs-on: ubuntu-latest
@@ -79,7 +103,7 @@ jobs:
         uses: erlef/setup-beam@v1
         with:
           otp-version: 26.x
-          elixir-version: 1.15.x
+          elixir-version: 1.16.x
 
       # Don't cache PLTs based on mix.lock hash, as Dialyzer can incrementally update even old ones
       # Cache key based on Elixir & Erlang version (also useful when running in matrix)

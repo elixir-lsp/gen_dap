@@ -9,7 +9,7 @@ defmodule GenDAP.MixProject do
       description: "Library for creating debug adapters",
       source_url: @source_url,
       version: "0.0.1",
-      elixir: "~> 1.13",
+      elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
@@ -41,7 +41,16 @@ defmodule GenDAP.MixProject do
       # {:schematic, path: "../schematic"},
       {:schematic, "~> 0.2"},
       {:dialyxir, ">= 0.0.0", only: [:dev, :test], runtime: false}
-    ]
+    ] ++ spec_lint_deps()
+  end
+
+  # spec_lint requires Elixir ~> 1.18
+  defp spec_lint_deps do
+    if Version.match?(System.version(), ">= 1.18.0") do
+      [{:spec_lint, "~> 0.1", only: [:dev, :test], runtime: false}]
+    else
+      []
+    end
   end
 
   defp docs() do
