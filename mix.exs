@@ -9,7 +9,7 @@ defmodule GenDAP.MixProject do
       description: "Library for creating debug adapters",
       source_url: @source_url,
       version: "0.0.1",
-      elixir: "~> 1.13",
+      elixir: "~> 1.16",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       elixirc_paths: elixirc_paths(Mix.env()),
