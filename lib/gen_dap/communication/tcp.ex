@@ -68,7 +68,7 @@ defmodule GenDAP.Communication.TCP do
   end
 
   defp read_body(_socket, buffer, length) when byte_size(buffer) >= length do
-    <<body::binary-size(length), buffer::binary>> = buffer
+    <<body::binary-size(^length), buffer::binary>> = buffer
 
     {body, buffer}
   end
